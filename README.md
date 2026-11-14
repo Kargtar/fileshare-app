@@ -84,7 +84,8 @@ cd frontend && npm install && npm run dev   # http://localhost:5173, /api przeki
 ## CI
 
 Każdy push na `main` buduje oba obrazy, wypycha je na DockerHub z tagiem = SHA commita
-i podbija ten tag w fileshare-gitops, a ArgoCD wdraża nową wersję. W ustawieniach repo
+i podbija ten tag w fileshare-gitops, a ArgoCD wdraża nową wersję. Ten sam SHA trafia do frontendu
+(`build-arg VERSION`) i jest widoczny w stopce strony jako link do commita. W ustawieniach repo
 (Settings → Secrets and variables → Actions) potrzebne są:
 
 - zmienna `DOCKERHUB_USERNAME`

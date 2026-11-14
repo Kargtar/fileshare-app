@@ -56,3 +56,9 @@ button:disabled {
 [role='alert'] {
   color: crimson;
 }
+
+footer {
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}
