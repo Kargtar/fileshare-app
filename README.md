@@ -11,8 +11,11 @@ Infrastruktura jest w fileshare-infra, a wdrożenie w fileshare-gitops.
 
 ## Lokalnie
 
+Backend potrzebuje Valkey:
+
 ```sh
-cd backend && npm install && npm run dev     # http://localhost:3000
+podman run -d --name valkey -p 6379:6379 valkey/valkey:9.1-alpine
+cd backend && npm install && npm run dev    # http://localhost:3000
 cd frontend && npm install && npm run dev    # http://localhost:5173, /api przekierowane na backend
 ```
 
