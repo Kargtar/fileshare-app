@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+
+concurrency: build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.app }}
+          file: ${{ matrix.app }}/Containerfile
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/fileshare-${{ matrix.app }}:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: Kargtar/fileshare-gitops
+          token: ${{ secrets.GITOPS_TOKEN }}
+      - name: Podbicie tagów w fileshare-gitops
+        working-directory: k8s
+        run: |
+          kustomize edit set image \
+            backend=${{ vars.DOCKERHUB_USERNAME }}/fileshare-backend:${{ github.sha }} \
+            frontend=${{ vars.DOCKERHUB_USERNAME }}/fileshare-frontend:${{ github.sha }}
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git commit -am "fileshare-app ${{ github.sha }}"
+          git push
