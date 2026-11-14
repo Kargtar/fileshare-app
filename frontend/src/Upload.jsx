@@ -1,4 +1,4 @@
-import { useActionState } from 'react'
+import { useActionState, useRef, useState } from 'react'
 import { postJson } from './api.js'
 
 async function uploadFile(file) {
@@ -24,20 +24,45 @@ async function handleUpload(previousState, formData) {
   }
 }
 
+function CopyLink({ link }) {
+  const inputRef = useRef(null)
+  const [copied, setCopied] = useState(false)
+
+  function copy() {
+    inputRef.current.select()
+    // navigator.clipboard działa tylko po HTTPS, a aplikacja jest wystawiona po HTTP
+    document.execCommand('copy')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="copy-link">
+      <input ref={inputRef} value={link} readOnly />
+      <button type="button" onClick={copy}>
+        {copied ? 'Skopiowano' : 'Kopiuj link'}
+      </button>
+    </div>
+  )
+}
+
 export default function Upload() {
   const [result, formAction, isPending] = useActionState(handleUpload, null)
 
   return (
-    <form action={formAction}>
-      <input type="file" name="file" required />
-      <button disabled={isPending}>{isPending ? 'Wysyłanie…' : 'Wyślij'}</button>
+    <>
+      <form action={formAction}>
+        <input type="file" name="file" required />
+        <button disabled={isPending}>{isPending ? 'Wysyłanie…' : 'Wyślij'}</button>
+      </form>
 
       {result?.link && (
-        <p>
-          Link ważny 7 dni: <a href={result.link}>{result.link}</a>
-        </p>
+        <>
+          <p>Link ważny 7 dni:</p>
+          <CopyLink link={result.link} />
+        </>
       )}
       {result?.error && <p role="alert">{result.error}</p>}
-    </form>
+    </>
   )
 }

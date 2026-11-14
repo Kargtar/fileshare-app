@@ -30,7 +30,9 @@ export default function Download({ code }) {
       <p>
         {formatSize(file.size)}, dostępny do {formatDate(file.expiresAt)}
       </p>
-      <a href={file.downloadUrl}>Pobierz</a>
+      <a className="button" href={file.downloadUrl}>
+        Pobierz
+      </a>
     </section>
   )
 }
