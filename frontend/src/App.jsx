@@ -11,7 +11,7 @@ export default function App() {
   return (
     <main>
       <h1>
-        <a href="/">fileshare</a>
+        <a href="/">fileshare-app</a>
       </h1>
       {downloadCode ? <Download code={downloadCode} /> : <Upload />}
       <footer>
